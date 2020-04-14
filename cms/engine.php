@@ -4,10 +4,16 @@
     include(dirname(__FILE__).'/slug.php'); 
     
     // !! samo za live demo
-    if ( session_status() != PHP_SESSION_ACTIVE ) session_start();
-    if ( !isset($_SESSION['sess_id']) ) $_SESSION['sess_id'] = md5(uniqid());
-    $db1_path = dirname(__FILE__).'/db/klon-'.$_SESSION['sess_id'].'baza2.sqlite';
-    $db2_path = dirname(__FILE__).'/db/klon-'.$_SESSION['sess_id'].'userfiles.sqlite';
+    //if ( session_status() != PHP_SESSION_ACTIVE ) session_start();
+    $sess_id = explode('.', $_SERVER['HTTP_HOST'])[0]; // read subdomain
+    if (!ctype_alnum($sess_id)) {
+      die('Bad subdomain.');
+    }
+    //if ( !isset($_SESSION['sess_id']) ) $_SESSION['sess_id'] = md5(uniqid());
+//    $db1_path = dirname(__FILE__).'/db/klon-'.$_SESSION['sess_id'].'baza2.sqlite';
+//    $db2_path = dirname(__FILE__).'/db/klon-'.$_SESSION['sess_id'].'userfiles.sqlite';
+    $db1_path = dirname(__FILE__).'/db/klon-'.$sess_id.'baza2.sqlite';
+    $db2_path = dirname(__FILE__).'/db/klon-'.$sess_id.'userfiles.sqlite';
     if ( !file_exists($db1_path) ) 
       copy( dirname(__FILE__).'/db/baza2.sqlite', $db1_path);
     if ( !file_exists($db2_path) ) 
