@@ -80,8 +80,8 @@
 
 	function handleMousemove(event) {
     if (event.buttons === 0) return
-		if (m.state == 'downH' || m.state == 'down') m.x = event.clientX-10;
-		if (m.state == 'downV' || m.state == 'down') m.y = event.clientY-10;
+		if (m.state == 'downH' || m.state == 'down') m.x = event.clientX;
+		if (m.state == 'downV' || m.state == 'down') m.y = event.clientY;
   }
 
 	function selectFile(file, ix) {
@@ -151,8 +151,8 @@
   	grid-template-rows: var(--my, auto) 5px auto;
   	grid-template-areas: 
     "d1  vd1 d2 "
-    "hd1 hdc hd2"
-    "d3  vd2 d4";
+    "hd1 hdc d2"
+    "d3  vd2 d2";
 	}
 	.d1 {
 		grid-area: d1;
@@ -185,11 +185,13 @@
 		background-color:black;
 		cursor: row-resize;
 	}	
+  /*
 	.hd2 {
 		grid-area: hd2;
 		background-color:black;
 		cursor: row-resize;
-	}		
+	}	
+  */	
 	.hdc {
 		grid-area: hdc;
 		background-color:black;
@@ -202,12 +204,13 @@
 	<div class="vd1" on:mousedown={()=> m.state = 'downH'}></div>
 	<div class="vd2" on:mousedown={()=> m.state = 'downH'}></div>
 	<div class="hd1" on:mousedown={()=> m.state = 'downV'}></div>
+  <!--
 	<div class="hd2" on:mousedown={()=> m.state = 'downV'}></div>
+  -->
 	<div class="hdc" on:mousedown={()=> { m.state = 'down'}}></div>
 	<div class="d1">
-    <h2>Kako napraviti Testimonials sekciju</h2>
-    <p>Detaljno objasnjenje...<br>.....
-    </p>
+    <iframe  id="adminPreview" title="Admin" src="../../cms/admin/index.html" frameBorder="0" width="100%" height="100%">
+    </iframe>
   </div>
 	<div class="d2" style="overflow: auto;display: flex; flex-flow: column;">
     <div class="input-group">
@@ -245,10 +248,13 @@
     </div>  
 
   </div>
+  <!--
 	<div class="d4">
-    <iframe  id="adminPreview" title="Admin" src="../../cms/admin/index.html" frameBorder="0" width="100%" height="100%">
-    </iframe>
+    <h2>Kako napraviti Testimonials sekciju</h2>
+    <p>Detaljno objasnjenje...<br>.....
+    </p>
   </div>
+  -->
 </grid>
 <!--
 m.x = {m.x} px; m.y = {m.y} px
