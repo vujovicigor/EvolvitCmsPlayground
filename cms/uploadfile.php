@@ -1,6 +1,6 @@
 <?PHP
-include("engine.php");
 session_start();
+include("engine.php");
 if ( !isset($_SESSION['_session_user_name']) ){
     return;
 }
