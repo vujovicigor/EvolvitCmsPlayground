@@ -1,6 +1,11 @@
 <script>
-  import ace from 'brace'
-  console.log('ace', ace)
+//  import ace from 'brace'
+//  console.log('ace', ace)
+
+  // ace NOV
+//
+import ace from '../ace-builds-master/src-noconflict/ace.js'
+
   import { onMount } from 'svelte';
 
   function fetch2(url, obj){
@@ -54,10 +59,11 @@
 */
   let grid_el
   let editor
-  let site_preview_url = 'moon'
+  let site_preview_url = window.location.hash.slice(1) 
+  $: if (site_preview_url) window.location.hash = site_preview_url 
   let files = []
   let files_map = {}
-  let selected_file_name = 'moon.twig'
+  let selected_file_name = site_preview_url + '.twig'
   let editor_value_changed = false
 	let m = { x: 400, y: 300, state:'' };
   $: {
@@ -91,7 +97,7 @@
     let name_arr = selected_file_name.split('.')
     name_arr.pop();
     let trimmed_name = name_arr.join('.')
-    console.log(file, ix, trimmed_name)
+    //console.log(file, ix, trimmed_name)
     site_preview_url = trimmed_name
   }
 
@@ -104,6 +110,7 @@
     })
     document.getElementById('sitePreview').contentWindow.location.reload()
     if (!err) await fetch_file_list()
+    editor.focus();
     
   }
   
@@ -114,15 +121,26 @@
     m.x = grid_el.clientWidth/2 && document.body.clientWidth/2 ;
     m.y = grid_el.clientHeight/2 && document.body.clientHeight/2;
 
+    ace.config.set('basePath', '../ace-builds-master/src-noconflict/')
     editor = ace.edit("editor");
     editor.setTheme("ace/theme/monokai");
-    editor.session.setMode("ace/mode/html");
+    editor.session.setMode("ace/mode/twig");
+    editor.commands.addCommand({
+        name: 'Save',
+        bindKey: {win: 'Ctrl-S',  mac: 'Command-S'},
+        exec: function(editor) {
+            save_twig_template()
+        },
+        readOnly: false
+    });    
     //editor.session.setMode("ace/mode/javascript");
     //var [resp,err] = await fetch2('twigs', {query:'Twigs', id: "2"})
     //editor.setValue(resp[0].html);
     await fetch_file_list()
+    editor.scrollToLine(0, true, true, function () {});
 
     editor.session.on('change', function(delta) {
+      if (!selected_file_name || !files_map || !files_map[selected_file_name]) return
       editor_value_changed = (editor.getValue() != files_map[selected_file_name].html)
     });    
 	});  
@@ -134,11 +152,32 @@
       return r;
     }, {});
     files = resp
-    editor.setValue(files_map[selected_file_name].html);    
+    if (!selected_file_name || !files_map || !files_map[selected_file_name]) return
+    
+    if (editor.getValue() != files_map[selected_file_name].html){
+      editor.setValue(files_map[selected_file_name].html);    
+      editor.resize(true);
+    }
 
-    editor.resize(true);
-    editor.scrollToLine(0, true, true, function () {});
+  }
 
+  async function addNewFile(){
+    let newFileName = prompt('Enter file name:')
+    // todo: force .twig extensin 
+    if (!newFileName) return
+
+    var [resp,err] = await fetch2('twigs', {
+      query:'Twigs', 
+      _action:'insert', 
+      name: newFileName, 
+      html: ''
+    })
+    if (!err) await fetch_file_list()
+    selected_file_name = newFileName
+    selectFile(files_map[selected_file_name])
+//    document.getElementById('sitePreview').contentWindow.location.reload()
+    
+    //files = [{id:'', name:'novi.twig', html:'prazno'}, ...files]
   }
 </script>
 <style>
@@ -217,7 +256,12 @@
       <input bind:value="{site_preview_url}" type="text" class="form-control" placeholder="url" aria-label="url" aria-describedby="basic-addon2">
       <div class="input-group-append">
         <button on:click={()=> document.getElementById('sitePreview').contentWindow.location.reload() } 
-        class="btn btn-outline-secondary" type="button">Refresh</button>
+        class="btn btn-outline-secondary" type="button">
+        <span class="oi oi-loop-circular" title="Refresh" aria-hidden="true"></span>
+        </button>
+        <a class="btn btn-outline-secondary" href="../../{site_preview_url}" target="_blank" role="button">
+        <span class="oi oi-external-link" title="Open in new tab" aria-hidden="true"></span>
+        </a>
       </div>
     </div>
 
@@ -229,13 +273,20 @@
     <div style="margin:0; color:white; background-color:#2F3129">
       HTML/Twig Code Editor  
       
-    <button on:click={save_twig_template} disabled={!editor_value_changed} style="float:right" class="btn btn-outline-secondary" type="button">Save
+    <button on:click={save_twig_template} disabled={!editor_value_changed} style="float:right" class="btn btn-outline-secondary" type="button">
+      <span class="oi oi-check"></span> Save
     </button>
       
     </div>
 
     <div style="overflow: auto;display: flex; flex-flow: row; flex:1">
       <div class="list-group" style="overflow:auto">
+          <a href="javascript:void(0)" on:click={addNewFile} 
+          class="list-group-item list-group-item-action list-group-item-light">
+            
+            <strong><span class="oi oi-plus"></span> Add new file</strong>
+          </a>
+
         {#each files as file, ix}
           <a href="javascript:void(0)" on:click={()=> selectFile(file, ix)} 
           class="list-group-item list-group-item-action list-group-item-light {file.name==selected_file_name?'active':''}">
