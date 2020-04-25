@@ -2,8 +2,44 @@
     error_reporting(E_ALL);
     ini_set('display_errors', 1);
     include(dirname(__FILE__).'/slug.php'); 
-    
     // !! samo za live demo
+
+    if ( session_status() != PHP_SESSION_ACTIVE ) session_start();
+
+    // login
+    if ( !isset($_SESSION['_session_user_name']) || !isset($_SESSION['_session_user_role']) ){
+      $_SESSION['_session_user_name'] = 'demo';
+      $_SESSION['_session_user_role'] = 2;
+    }
+
+    if ( !isset($_SESSION['sess_id']) ) $_SESSION['sess_id'] = md5(uniqid());
+    $sess_id = $_SESSION['sess_id'];
+
+    $subdomain = explode('.', $_SERVER['HTTP_HOST'])[0]; // read subdomain
+    if (!ctype_alnum($subdomain)) {
+      die('Bad subdomain.');
+    }
+    // baza2 je -> -main
+    $db1_path = dirname(__FILE__).'/db/klon-'.$sess_id.'-main.sqlite';
+    $db2_path = dirname(__FILE__).'/db/klon-'.$sess_id.'-userfiles.sqlite';
+
+    $db1_path_subdomain = dirname(__FILE__).'/db/klon-'.$subdomain.'-main.sqlite';
+    $db2_path_subdomain = dirname(__FILE__).'/db/klon-'.$subdomain.'-userfiles.sqlite';
+
+    $db1_path_main = dirname(__FILE__).'/db/baza2.sqlite';
+    $db2_path_main = dirname(__FILE__).'/db/userfiles.sqlite';
+
+    // kloniraj fajl iz {{subdomaina || maina}} u {{sessid}}
+    if ( !file_exists( $db1_path ) )  {
+      //echo 'nema ='.$db1_path;
+      //echo 'subdomain, main = '.$db1_path_subdomain.', '.$db1_path_main;
+      copy( file_exists($db1_path_subdomain)?$db1_path_subdomain:$db1_path_main , $db1_path);
+      copy( file_exists($db2_path_subdomain)?$db2_path_subdomain:$db2_path_main , $db2_path);
+    }
+
+
+
+    /*
     //if ( session_status() != PHP_SESSION_ACTIVE ) session_start();
     $sess_id = explode('.', $_SERVER['HTTP_HOST'])[0]; // read subdomain
     if (!ctype_alnum($sess_id)) {
@@ -18,6 +54,8 @@
       copy( dirname(__FILE__).'/db/baza2.sqlite', $db1_path);
     if ( !file_exists($db2_path) ) 
       copy( dirname(__FILE__).'/db/userfiles.sqlite', $db2_path);
+
+*/
 
     try{
         $db = new PDO('sqlite:'.$db1_path);

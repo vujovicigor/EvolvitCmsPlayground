@@ -4,7 +4,7 @@
 
   // ace NOV
 //
-import ace from '../ace-builds-master/src-noconflict/ace.js'
+  import ace from '../ace-builds-master/src-noconflict/ace.js'
 
   import { onMount } from 'svelte';
 
@@ -22,7 +22,7 @@ import ace from '../ace-builds-master/src-noconflict/ace.js'
 //    if (self) self.set('loading', true)
     
     return new Promise(function(resolve, reject) {
-      var response = fetch('../../cms/'+'api.php', {
+      var response = fetch('../cms/'+'api.php', {
           method: 'post',
           credentials:'same-origin',
   //            headers: {
@@ -65,7 +65,8 @@ import ace from '../ace-builds-master/src-noconflict/ace.js'
   let files_map = {}
   let selected_file_name = site_preview_url + '.twig'
   let editor_value_changed = false
-	let m = { x: 400, y: 300, state:'' };
+  let m = { x: 400, y: 300, state:'' };
+  $: userSelect = m.state?'none':'auto' //user-select: none
   $: {
     if (!m.state && document.getElementById('sitePreview'))
       document.getElementById('sitePreview').style.pointerEvents='auto'
@@ -121,7 +122,7 @@ import ace from '../ace-builds-master/src-noconflict/ace.js'
     m.x = grid_el.clientWidth/2 && document.body.clientWidth/2 ;
     m.y = grid_el.clientHeight/2 && document.body.clientHeight/2;
 
-    ace.config.set('basePath', '../ace-builds-master/src-noconflict/')
+    ace.config.set('basePath', 'ace-builds-master/src-noconflict/')
     editor = ace.edit("editor");
     editor.setTheme("ace/theme/monokai");
     editor.session.setMode("ace/mode/twig");
@@ -239,7 +240,7 @@ import ace from '../ace-builds-master/src-noconflict/ace.js'
 </style>
 <window on:mouseup|capture={()=> { if(m.state) m.state = '' } }/>
 <grid bind:this={grid_el} on:mousemove={handleMousemove} on:mouseup={()=> { if(m.state) m.state = '' } }
-			style="--mx:{m.x}px; --my:{m.y}px">
+			style="--mx:{m.x}px; --my:{m.y}px; user-select:{userSelect}">
 	<div class="vd1" on:mousedown={()=> m.state = 'downH'}></div>
 	<div class="vd2" on:mousedown={()=> m.state = 'downH'}></div>
 	<div class="hd1" on:mousedown={()=> m.state = 'downV'}></div>
@@ -248,7 +249,7 @@ import ace from '../ace-builds-master/src-noconflict/ace.js'
   -->
 	<div class="hdc" on:mousedown={()=> { m.state = 'down'}}></div>
 	<div class="d1">
-    <iframe  id="adminPreview" title="Admin" src="../../cms/admin/index.html" frameBorder="0" width="100%" height="100%">
+    <iframe  id="adminPreview" title="Admin" src="../cms/admin/index.html" frameBorder="0" width="100%" height="100%">
     </iframe>
   </div>
 	<div class="d2" style="overflow: auto;display: flex; flex-flow: column;">
@@ -259,13 +260,13 @@ import ace from '../ace-builds-master/src-noconflict/ace.js'
         class="btn btn-outline-secondary" type="button">
         <span class="oi oi-loop-circular" title="Refresh" aria-hidden="true"></span>
         </button>
-        <a class="btn btn-outline-secondary" href="../../{site_preview_url}" target="_blank" role="button">
+        <a class="btn btn-outline-secondary" href="../{site_preview_url}" target="_blank" role="button">
         <span class="oi oi-external-link" title="Open in new tab" aria-hidden="true"></span>
         </a>
       </div>
     </div>
 
-    <iframe id="sitePreview" title="Site Preview" src="../../{site_preview_url}" frameBorder="0" width="100%" height="100%">
+    <iframe id="sitePreview" title="Site Preview" src="../{site_preview_url}" frameBorder="0" width="100%" height="100%">
     </iframe>
   </div>
 	<div class="d3" style="overflow: auto;display: flex; flex-flow: column;">
