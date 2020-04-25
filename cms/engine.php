@@ -8,11 +8,14 @@
 
     // login
     if ( !isset($_SESSION['_session_user_name']) || !isset($_SESSION['_session_user_role']) ){
-      $_SESSION['_session_user_name'] = 'demo';
+      $_SESSION['_session_user_name'] = 'sandboxuser';
       $_SESSION['_session_user_role'] = 2;
     }
 
-    if ( !isset($_SESSION['sess_id']) ) $_SESSION['sess_id'] = md5(uniqid());
+    // zezalica za mene da mogu da izaberem projekat tj bazu
+    if ( isset($_REQUEST['sess_id']) ) $_SESSION['sess_id'] = $_REQUEST['sess_id'];
+
+    if ( !isset($_SESSION['sess_id']) ) $_SESSION['sess_id'] = md5(uniqid());    
     $sess_id = $_SESSION['sess_id'];
 
     $subdomain = explode('.', $_SERVER['HTTP_HOST'])[0]; // read subdomain
