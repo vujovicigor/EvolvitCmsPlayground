@@ -164,9 +164,10 @@
 
   async function addNewFile(){
     let newFileName = prompt('Enter file name:')
-    // todo: force .twig extensin 
     if (!newFileName) return
-
+    if (!newFileName.endsWith('.twig'))
+      newFileName = newFileName + '.twig';
+    
     var [resp,err] = await fetch2('twigs', {
       query:'Twigs', 
       _action:'insert', 
@@ -179,6 +180,19 @@
 //    document.getElementById('sitePreview').contentWindow.location.reload()
     
     //files = [{id:'', name:'novi.twig', html:'prazno'}, ...files]
+  }
+  async function removeFile(file){
+    let conf = confirm(`Remove file '${file.name}'?`)
+    if (!conf) return
+
+    var [resp,err] = await fetch2('twigs', {
+      query:'Twigs', 
+      _action:'delete', 
+      ...file
+    })
+    if (!err) await fetch_file_list()
+    selected_file_name = null
+    //selectFile(files_map[selected_file_name])
   }
 </script>
 <style>
@@ -237,6 +251,12 @@
 		background-color:black;
 		cursor: move;
 	}	
+  .remove-btn{
+    visibility: hidden;
+  }
+  .list-group-item:hover .remove-btn{
+    visibility: visible;
+  }
 </style>
 <window on:mouseup|capture={()=> { if(m.state) m.state = '' } }/>
 <grid bind:this={grid_el} on:mousemove={handleMousemove} on:mouseup={()=> { if(m.state) m.state = '' } }
@@ -271,8 +291,8 @@
   </div>
 	<div class="d3" style="overflow: auto;display: flex; flex-flow: column;">
 
-    <div style="margin:0; color:white; background-color:#2F3129">
-      HTML/Twig Code Editor  
+    <div style="margin:0; color:white; background-color:#203554; padding-left:2rem; display: flex;align-items: center;justify-content: space-between;">
+      <span>HTML/Twig Code Editor </span> 
       
     <button on:click={save_twig_template} disabled={!editor_value_changed} style="float:right" class="btn btn-outline-secondary" type="button">
       <span class="oi oi-check"></span> Save
@@ -289,9 +309,16 @@
           </a>
 
         {#each files as file, ix}
-          <a href="javascript:void(0)" on:click={()=> selectFile(file, ix)} 
+          <a href="javascript:void(0)" on:click={()=> selectFile(file, ix)}
+          style="padding-right: 0.5rem;" 
           class="list-group-item list-group-item-action list-group-item-light {file.name==selected_file_name?'active':''}">
             {file.name}
+              <span on:click|stopPropagation={ ()=> removeFile(file) }
+                style="float: right; padding: 0.1rem;" 
+                class="oi oi-x remove-btn" 
+                title="Delete file" 
+                aria-hidden="true">
+              </span> 
           </a>
         {/each}
       </div>  
