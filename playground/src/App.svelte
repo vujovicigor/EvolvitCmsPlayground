@@ -92,8 +92,11 @@
 
 	function handleMousemove(event) {
     if (event.buttons === 0) return
-		if (m.state == 'downH' || m.state == 'down') m.x = event.clientX;
-		if (m.state == 'downV' || m.state == 'down') m.y = event.clientY;
+
+//document.body.clientWidth/2 
+//document.body.clientHeight/2
+		if (m.state == 'downH' || m.state == 'down') m.x = event.clientX / document.body.clientWidth ;
+		if (m.state == 'downV' || m.state == 'down') m.y = event.clientY / document.body.clientHeight ;
   }
 
 	function selectFile(file, ix) {
@@ -124,8 +127,11 @@
     console.log(grid_el, grid_el.clientWidth, document.body.clientWidth, grid_el.clientWidth/2 && document.body.clientWidth/2)
     window.grid_el = grid_el
 
-    m.x = grid_el.clientWidth/2 && document.body.clientWidth/2 ;
-    m.y = grid_el.clientHeight/2 && document.body.clientHeight/2;
+    m.x = 0.5 ;
+    m.y = 0.5 ;
+
+//    m.x = grid_el.clientWidth/2 && document.body.clientWidth/2 ;
+//    m.y = grid_el.clientHeight/2 && document.body.clientHeight/2;
 
     ace.config.set('basePath', 'ace-builds-master/src-noconflict/')
     editor = ace.edit("editor");
@@ -265,7 +271,7 @@
 </style>
 <window on:mouseup|capture={()=> { if(m.state) m.state = '' } }/>
 <grid bind:this={grid_el} on:mousemove={handleMousemove} on:mouseup={()=> { if(m.state) m.state = '' } }
-			style="--mx:{m.x}px; --my:{m.y}px; user-select:{userSelect}">
+			style="--mx:{100*m.x}%; --my:{100*m.y}%; user-select:{userSelect}">
 	<div class="vd1" on:mousedown={()=> m.state = 'downH'}></div>
 	<div class="vd2" on:mousedown={()=> m.state = 'downH'}></div>
 	<div class="hd1" on:mousedown={()=> m.state = 'downV'}></div>
@@ -279,7 +285,7 @@
   </div>
 
 	<div class="d2" style="overflow: auto;display: flex; flex-flow: column;">
-    <div style="height:6rem; margin:0; color:white; background-color:#203554; padding-left:1rem; display: flex;align-items: center;justify-content: space-between;">
+    <div style="height: 3.75rem;; margin:0; color:white; background-color:#203554; padding-left:1rem; display: flex;align-items: center;justify-content: space-between;">
       <div>
         <img src="bulb.png" alt="buld" style="margin-right: 0.5rem;">
         <span>Preview</span>
