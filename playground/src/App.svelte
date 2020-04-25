@@ -61,11 +61,16 @@
   let editor
   let site_preview_url = window.location.hash.slice(1) 
   $: if (site_preview_url) window.location.hash = site_preview_url 
+  let view_generated_source_promise
+  $: if (site_preview_url && view_generated_source) 
+    view_generated_source_promise = fetch('../'+site_preview_url).then((r)=>r.text())
+
   let files = []
   let files_map = {}
   let selected_file_name = site_preview_url + '.twig'
   let editor_value_changed = false
   let m = { x: 400, y: 300, state:'' };
+  let view_generated_source=false
   $: userSelect = m.state?'none':'auto' //user-select: none
   $: {
     if (!m.state && document.getElementById('sitePreview'))
@@ -272,7 +277,37 @@
     <iframe  id="adminPreview" title="Admin" src="../cms/admin/index.html" frameBorder="0" width="100%" height="100%">
     </iframe>
   </div>
+
 	<div class="d2" style="overflow: auto;display: flex; flex-flow: column;">
+    <div style="height:6rem; margin:0; color:white; background-color:#203554; padding-left:1rem; display: flex;align-items: center;justify-content: space-between;">
+      <div>
+        <img src="bulb.png" alt="buld" style="margin-right: 0.5rem;">
+        <span>Preview</span>
+      </div>
+      <div style="display:flex">
+
+        <div on:click={()=> view_generated_source=false}
+        style="border-bottom-width: 4px; cursor: pointer;
+          border-bottom-style: {!view_generated_source?'solid':'hidden'};
+          border-bottom-color: white;
+          padding: 0.5rem;
+          margin: 0.5rem;">
+          <img src="prev_browser.png" alt="browser" style="margin-right:0.5rem">
+          Browser preview
+        </div>
+
+        <div on:click={()=> view_generated_source=true}
+        style="border-bottom-width: 4px; cursor: pointer;
+          border-bottom-style: {view_generated_source?'solid':'hidden'};
+          border-bottom-color: white;
+          padding: 0.5rem;
+          margin: 0.5rem;">
+          <img src="prev_source.png" alt="browser" style="margin-right:0.5rem">
+          View Generated source
+        </div>
+
+      </div>
+    </div>
     <div class="input-group">
       <input bind:value="{site_preview_url}" type="text" class="form-control" placeholder="url" aria-label="url" aria-describedby="basic-addon2">
       <div class="input-group-append">
@@ -286,13 +321,35 @@
       </div>
     </div>
 
-    <iframe id="sitePreview" title="Site Preview" src="../{site_preview_url}" frameBorder="0" width="100%" height="100%">
+    {#if view_generated_source }
+    <pre style="flex:1">
+    <code>
+      {#await view_generated_source_promise}
+        <!-- promise is pending -->
+        <p>loading...</p>
+      {:then value}
+        <!-- promise was fulfilled -->
+        {value}
+      {:catch error}
+        <!-- promise was rejected -->
+        <p>Something went wrong: {error.message}</p>
+      {/await}
+    </code>
+    </pre>
+    {:else}
+    <iframe style="flex:1" id="sitePreview" title="Site Preview" src="../{site_preview_url}" frameBorder="0" width="100%" height="100%">
     </iframe>
+    {/if }
   </div>
+
+
 	<div class="d3" style="overflow: auto;display: flex; flex-flow: column;">
 
-    <div style="margin:0; color:white; background-color:#203554; padding-left:2rem; display: flex;align-items: center;justify-content: space-between;">
-      <span>HTML/Twig Code Editor </span> 
+    <div style="margin:0; color:white; background-color:#203554; padding-left:1rem; display: flex;align-items: center;justify-content: space-between;">
+      <span>
+        <img src="bulb.png" style="margin-right: 0.5rem;" alt="buld">
+        HTML/Twig Code Editor 
+      </span> 
       
     <button on:click={save_twig_template} disabled={!editor_value_changed} style="float:right" class="btn btn-outline-secondary" type="button">
       <span class="oi oi-check"></span> Save
