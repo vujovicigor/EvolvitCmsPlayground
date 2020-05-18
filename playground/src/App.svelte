@@ -143,7 +143,7 @@
           }
         }, false);
 
-        postMsg({...msg, seq}, 'https://evolvitcms.com/googleauthframe')
+        postMsg({...msg, seq}, 'http://evolvitcms.com/googleauthframe')
       });
     }
     window.postMessagePromise = postMessagePromise
