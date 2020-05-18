@@ -248,15 +248,11 @@
 
 
   let headerFrameEl
-/*
+
   window.onmessage = function(e){
     console.log('onmessage u plejgr', e)
 
-      if (e.data == 'hello') {
-          alert('It works, in main');
-      }
   };
-*/
 </script>
 <style>
 	grid {
