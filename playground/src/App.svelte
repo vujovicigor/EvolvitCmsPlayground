@@ -4,6 +4,7 @@
 
   // ace NOV
 //
+  window.document.domain = "evolvitcms.com";
   import ace from '../ace-builds-master/src-noconflict/ace.js'
 
   import { onMount } from 'svelte';
@@ -127,8 +128,9 @@
     
   }
   
+  let postMsg
 	onMount( async() => {
-    var postMsg = headerFrameEl.contentWindow.postMessage
+    postMsg = window.document.getElementById('headerFrameEl').contentWindow.postMessage
     let __seq = 0
     function postMessagePromise(msg){
       return new Promise(function(resolve, reject) {
@@ -141,7 +143,7 @@
           }
         }, false);
 
-        postMsg({...msg, seq}, '*')
+        postMsg({...msg, seq}, 'https://evolvitcms.com/googleauthframe')
       });
     }
     window.postMessagePromise = postMessagePromise
@@ -149,7 +151,7 @@
 
     // test
     setTimeout(function(){
-      postMessagePromise({mgs:'PRIMIXZ'})
+      postMessagePromise({mgs:'PRomisZ from plejgr'})
       .then((r)=>{ console.log('JEEE', r) })
     }, 6000)
 
@@ -246,18 +248,15 @@
 
 
   let headerFrameEl
-  setTimeout(() => {
-    headerFrameEl.contentWindow.postMessage('helloIZPLEGR', '*');
-  }, 5000);
-
+/*
   window.onmessage = function(e){
-
+    console.log('onmessage u plejgr', e)
 
       if (e.data == 'hello') {
           alert('It works, in main');
       }
   };
-
+*/
 </script>
 <style>
 	grid {
@@ -324,7 +323,7 @@
 </style>
 <window on:mouseup|capture={()=> { if(m.state) m.state = '' } }/>
 <div>
-  <iframe  bind:this={headerFrameEl} title="Header" src="https://evolvitcms.com/googleauthframe" frameBorder="0" width="100%" height="60px">
+  <iframe  bind:this={headerFrameEl} id="headerFrameEl" title="Header" src="https://evolvitcms.com/googleauthframe" frameBorder="0" width="100%" height="60px">
   </iframe>
 </div>
 <grid bind:this={grid_el} on:mousemove={handleMousemove} on:mouseup={()=> { if(m.state) m.state = '' } }
