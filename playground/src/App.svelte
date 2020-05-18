@@ -134,7 +134,7 @@
     let __seq = 0
     function postMessagePromise(msg){
       return new Promise(function(resolve, reject) {
-        let seq = __seq++;
+        let seq = ++__seq;
 
         let event_ref = window.addEventListener("message", function(resp){
           if (resp && resp.data && resp.data.__seq && resp.data.__seq == seq){
