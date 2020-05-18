@@ -128,7 +128,33 @@
   }
   
 	onMount( async() => {
-    console.log(grid_el, grid_el.clientWidth, document.body.clientWidth, grid_el.clientWidth/2 && document.body.clientWidth/2)
+    var postMsg = headerFrameEl.contentWindow.postMessage
+    let __seq = 0
+    function postMessagePromise(msg){
+      return new Promise(function(resolve, reject) {
+        let seq = __seq++;
+
+        let event_ref = window.addEventListener("message", function(resp){
+          if (resp && resp.data && resp.data.__seq && resp.data.__seq == seq){
+            window.removeEventListener("message", event_ref)
+            resolve(resp.data)
+          }
+        }, false);
+
+        postMsg({...msg, seq}, '*')
+      });
+    }
+    window.postMessagePromise = postMessagePromise
+    window.postMsg = postMsg
+
+    // test
+    setTimeout(function(){
+      postMessagePromise({mgs:'PRIMIXZ'})
+      .then((r)=>{ console.log('JEEE', r) })
+    }, 6000)
+
+
+    //console.log(grid_el, grid_el.clientWidth, document.body.clientWidth, grid_el.clientWidth/2 && document.body.clientWidth/2)
     window.grid_el = grid_el
 
     m.x = 0.5 ;
@@ -217,26 +243,11 @@
 
 
 
-  function postMsg(obj={}){
-    console.log('headerFrameEl.contentWindow',headerFrameEl.contentWindow)
-    var resolve_fn;
-    let promise = new Promise(function(resolve, reject) {
-      resolve_fn = resolve
-      //resolve("done");
 
-      //reject(new Error("…")); // ignored
-      //setTimeout(() => resolve("…")); // ignored
-    });
-    obj.resolve_fn=resolve_fn 
-    //headerFrameEl.contentWindow.postMessage(obj, '*');
-    return promise
-  }
-
-  window.postMsg = postMsg
 
   let headerFrameEl
   setTimeout(() => {
-    headerFrameEl.contentWindow.postMessage('hello', '*');
+    headerFrameEl.contentWindow.postMessage('helloIZPLEGR', '*');
   }, 5000);
 
   window.onmessage = function(e){
