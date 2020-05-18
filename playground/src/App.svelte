@@ -117,7 +117,11 @@
       ...files_map[selected_file_name], 
       html: editor.getValue()
     })
-    document.getElementById('sitePreview').contentWindow.location.reload()
+    if (document.getElementById('sitePreview'))
+      document.getElementById('sitePreview').contentWindow.location.reload()
+    else 
+      view_generated_source_promise = fetch('../'+site_preview_url).then((r)=>r.text())
+
     if (!err) await fetch_file_list()
     editor.focus();
     
@@ -145,6 +149,11 @@
         },
         readOnly: false
     });    
+    editor.session.setOptions({
+      //mode: "ace/mode/javascript",
+      tabSize: 2,
+      useSoftTabs: true
+    });
     //editor.session.setMode("ace/mode/javascript");
     //var [resp,err] = await fetch2('twigs', {query:'Twigs', id: "2"})
     //editor.setValue(resp[0].html);
@@ -205,6 +214,39 @@
     selected_file_name = null
     //selectFile(files_map[selected_file_name])
   }
+
+
+
+  function postMsg(obj={}){
+    console.log('headerFrameEl.contentWindow',headerFrameEl.contentWindow)
+    var resolve_fn;
+    let promise = new Promise(function(resolve, reject) {
+      resolve_fn = resolve
+      //resolve("done");
+
+      //reject(new Error("…")); // ignored
+      //setTimeout(() => resolve("…")); // ignored
+    });
+    obj.resolve_fn=resolve_fn 
+    //headerFrameEl.contentWindow.postMessage(obj, '*');
+    return promise
+  }
+
+  window.postMsg = postMsg
+
+  let headerFrameEl
+  setTimeout(() => {
+    headerFrameEl.contentWindow.postMessage('hello', '*');
+  }, 5000);
+
+  window.onmessage = function(e){
+
+
+      if (e.data == 'hello') {
+          alert('It works, in main');
+      }
+  };
+
 </script>
 <style>
 	grid {
@@ -270,6 +312,10 @@
   }
 </style>
 <window on:mouseup|capture={()=> { if(m.state) m.state = '' } }/>
+<div>
+  <iframe  bind:this={headerFrameEl} title="Header" src="https://evolvitcms.com/googleauthframe" frameBorder="0" width="100%" height="60px">
+  </iframe>
+</div>
 <grid bind:this={grid_el} on:mousemove={handleMousemove} on:mouseup={()=> { if(m.state) m.state = '' } }
 			style="--mx:{100*m.x}%; --my:{100*m.y}%; user-select:{userSelect}">
 	<div class="vd1" on:mousedown={()=> m.state = 'downH'}></div>
@@ -299,7 +345,7 @@
           padding: 0.5rem;
           margin: 0.5rem;">
           <img src="prev_browser.png" alt="browser" style="margin-right:0.5rem">
-          Browser preview
+          Browser
         </div>
 
         <div on:click={()=> view_generated_source=true}
@@ -309,7 +355,7 @@
           padding: 0.5rem;
           margin: 0.5rem;">
           <img src="prev_source.png" alt="browser" style="margin-right:0.5rem">
-          View Generated source
+          Generated source
         </div>
 
       </div>
@@ -328,7 +374,7 @@
     </div>
 
     {#if view_generated_source }
-    <pre style="flex:1">
+    <pre style="flex:1; tab-size: 2;">
     <code>
       {#await view_generated_source_promise}
         <!-- promise is pending -->
