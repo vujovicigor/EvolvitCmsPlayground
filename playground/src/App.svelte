@@ -151,7 +151,7 @@
 
     // test
     setTimeout(function(){
-      postMessagePromise({mgs:'PRomisZ from plejgr'})
+      postMessagePromise({namespace:'PlaygroundProjectsAdd'})
       .then((r)=>{ console.log('JEEE', r) })
     }, 6000)
 
