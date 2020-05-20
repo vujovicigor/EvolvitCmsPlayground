@@ -332,12 +332,12 @@
   }
 </style>
 <window on:mouseup|capture={()=> { if(m.state) m.state = '' } }/>
-<div>
-  <iframe  bind:this={headerFrameEl} id="headerFrameEl" title="Header" src="http://evolvitcms.com/googleauthframe" frameBorder="0" width="100%" height="10px">
-  </iframe>
-</div>
+
 
 <div style="display:flex">
+  <iframe  bind:this={headerFrameEl} id="headerFrameEl" title="Header" src="http://evolvitcms.com/googleauthframe" frameBorder="0" width="150px" height="40px">
+  </iframe>
+  
   <button on:click={ signin } 
   class="btn btn-outline-secondary" type="button">
     Sign in to save isSignedIn={isSignedIn}, email={email}
