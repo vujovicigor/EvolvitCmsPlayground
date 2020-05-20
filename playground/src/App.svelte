@@ -164,7 +164,9 @@
 
 //    m.x = grid_el.clientWidth/2 && document.body.clientWidth/2 ;
 //    m.y = grid_el.clientHeight/2 && document.body.clientHeight/2;
-
+    await showPromise;
+    show = true
+    
     ace.config.set('basePath', 'ace-builds-master/src-noconflict/')
     editor = ace.edit("editor");
     editor.setTheme("ace/theme/monokai");
@@ -251,13 +253,18 @@
   let isSignedIn
   let email
   let show = false
+  let showResolve
+  let showPromise = new Promise(function(resolve, reject){
+    showResolve = resolve
+  })
 
   window.onmessage = function(e){
     console.log('onmessage u plejgroundu', e)
     if (e && e.data && e.data.namespace=='signin'){
       isSignedIn = e.data.data.isSignedIn
       email = e.data.data.email
-      show = true
+      showResolve()
+      
     }
 
   };
