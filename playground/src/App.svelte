@@ -351,12 +351,12 @@
     Sign in to save isSignedIn={isSignedIn}, email={email}
   </button>
 
-  <iframe  bind:this={headerFrameEl} id="headerFrameEl" title="Header" src="http://evolvitcms.com/googleauthframe" frameBorder="0" width="150px" height="40px">
+  <iframe  bind:this={headerFrameEl} id="headerFrameEl" title="Header" src="http://evolvitcms.com/googleauthframe" frameBorder="0" width="125px" height="40px">
   </iframe>
 
 </div>
 {#await showPromise}
-<div style="text-align:center"><p>Loading...</p></div>
+<div style="text-align:center; padding-top:4rem"><p>Loading...</p></div>
 {:then}
   <grid bind:this={grid_el} on:mousemove={handleMousemove} on:mouseup={()=> { if(m.state) m.state = '' } }
         style="--mx:{100*m.x}%; --my:{100*m.y}%; user-select:{userSelect}">
