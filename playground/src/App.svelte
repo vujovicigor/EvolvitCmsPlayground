@@ -344,16 +344,20 @@
 <window on:mouseup|capture={()=> { if(m.state) m.state = '' } }/>
 
 
-<div style="display:flex">
-  <iframe  bind:this={headerFrameEl} id="headerFrameEl" title="Header" src="http://evolvitcms.com/googleauthframe" frameBorder="0" width="150px" height="40px">
-  </iframe>
+<div style="display:flex; justify-content: flex-end;">
 
   <button on:click={ signin } 
   class="btn btn-outline-secondary" type="button">
     Sign in to save isSignedIn={isSignedIn}, email={email}
   </button>
+
+  <iframe  bind:this={headerFrameEl} id="headerFrameEl" title="Header" src="http://evolvitcms.com/googleauthframe" frameBorder="0" width="150px" height="40px">
+  </iframe>
+
 </div>
-{#if show}
+{#await showPromise}
+<div style="text-align:center"><p>Loading...</p></div>
+{:then}
   <grid bind:this={grid_el} on:mousemove={handleMousemove} on:mouseup={()=> { if(m.state) m.state = '' } }
         style="--mx:{100*m.x}%; --my:{100*m.y}%; user-select:{userSelect}">
     <div class="vd1" on:mousedown={()=> m.state = 'downH'}></div>
@@ -482,7 +486,7 @@
     </div>
     -->
   </grid>
-  {/if}
+  {/await}
 <!--
 m.x = {m.x} px; m.y = {m.y} px
 m.state = {m.state}
