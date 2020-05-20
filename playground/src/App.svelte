@@ -248,11 +248,25 @@
 
 
   let headerFrameEl
+  let isSignedIn
+  let email
 
   window.onmessage = function(e){
-    console.log('onmessage u plejgr', e)
+    console.log('onmessage u plejgroundu', e)
+    if (e && e.data && e.data.namespace=='signin'){
+      isSignedIn = e.data.data.isSignedIn
+      email = e.data.data.email
+    }
 
   };
+  function signin(){
+      postMessagePromise({namespace:'gapi.auth2.getAuthInstance().signIn()'})
+      .then((r)=>{ 
+        console.log('JEEE', r) 
+        isSignedIn = true
+        email = r.email
+      })    
+  }
 </script>
 <style>
 	grid {
@@ -319,8 +333,15 @@
 </style>
 <window on:mouseup|capture={()=> { if(m.state) m.state = '' } }/>
 <div>
-  <iframe  bind:this={headerFrameEl} id="headerFrameEl" title="Header" src="http://evolvitcms.com/googleauthframe" frameBorder="0" width="100%" height="60px">
+  <iframe  bind:this={headerFrameEl} id="headerFrameEl" title="Header" src="http://evolvitcms.com/googleauthframe" frameBorder="0" width="100%" height="10px">
   </iframe>
+</div>
+
+<div style="display:flex">
+  <button on:click={ signin } 
+  class="btn btn-outline-secondary" type="button">
+    Sign in to save isSignedIn={isSignedIn}, email={email}
+  </button>
 </div>
 <grid bind:this={grid_el} on:mousemove={handleMousemove} on:mouseup={()=> { if(m.state) m.state = '' } }
 			style="--mx:{100*m.x}%; --my:{100*m.y}%; user-select:{userSelect}">
