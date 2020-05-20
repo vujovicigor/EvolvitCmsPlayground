@@ -164,7 +164,7 @@
 
 //    m.x = grid_el.clientWidth/2 && document.body.clientWidth/2 ;
 //    m.y = grid_el.clientHeight/2 && document.body.clientHeight/2;
-    await showPromise();
+    await showPromise;
     show = true
     await tick();
 
