@@ -250,12 +250,14 @@
   let headerFrameEl
   let isSignedIn
   let email
+  let show = false
 
   window.onmessage = function(e){
     console.log('onmessage u plejgroundu', e)
     if (e && e.data && e.data.namespace=='signin'){
       isSignedIn = e.data.data.isSignedIn
       email = e.data.data.email
+      show = true
     }
 
   };
@@ -337,140 +339,142 @@
 <div style="display:flex">
   <iframe  bind:this={headerFrameEl} id="headerFrameEl" title="Header" src="http://evolvitcms.com/googleauthframe" frameBorder="0" width="150px" height="40px">
   </iframe>
-  
+
   <button on:click={ signin } 
   class="btn btn-outline-secondary" type="button">
     Sign in to save isSignedIn={isSignedIn}, email={email}
   </button>
 </div>
-<grid bind:this={grid_el} on:mousemove={handleMousemove} on:mouseup={()=> { if(m.state) m.state = '' } }
-			style="--mx:{100*m.x}%; --my:{100*m.y}%; user-select:{userSelect}">
-	<div class="vd1" on:mousedown={()=> m.state = 'downH'}></div>
-	<div class="vd2" on:mousedown={()=> m.state = 'downH'}></div>
-	<div class="hd1" on:mousedown={()=> m.state = 'downV'}></div>
-  <!--
-	<div class="hd2" on:mousedown={()=> m.state = 'downV'}></div>
-  -->
-	<div class="hdc" on:mousedown={()=> { m.state = 'down'}}></div>
-	<div class="d1">
-    <iframe  id="adminPreview" title="Admin" src="../cms/admin/index.html" frameBorder="0" width="100%" height="100%">
-    </iframe>
-  </div>
+{#if show}
+  <grid bind:this={grid_el} on:mousemove={handleMousemove} on:mouseup={()=> { if(m.state) m.state = '' } }
+        style="--mx:{100*m.x}%; --my:{100*m.y}%; user-select:{userSelect}">
+    <div class="vd1" on:mousedown={()=> m.state = 'downH'}></div>
+    <div class="vd2" on:mousedown={()=> m.state = 'downH'}></div>
+    <div class="hd1" on:mousedown={()=> m.state = 'downV'}></div>
+    <!--
+    <div class="hd2" on:mousedown={()=> m.state = 'downV'}></div>
+    -->
+    <div class="hdc" on:mousedown={()=> { m.state = 'down'}}></div>
+    <div class="d1">
+      <iframe  id="adminPreview" title="Admin" src="../cms/admin/index.html" frameBorder="0" width="100%" height="100%">
+      </iframe>
+    </div>
 
-	<div class="d2" style="overflow: auto;display: flex; flex-flow: column;">
-    <div style="height: 3.75rem;; margin:0; color:white; background-color:#203554; padding-left:1rem; display: flex;align-items: center;justify-content: space-between;">
-      <div>
-        <img src="bulb.png" alt="buld" style="margin-right: 0.5rem;">
-        <span>Preview</span>
-      </div>
-      <div style="display:flex">
-
-        <div on:click={()=> view_generated_source=false}
-        style="border-bottom-width: 4px; cursor: pointer;
-          border-bottom-style: {!view_generated_source?'solid':'hidden'};
-          border-bottom-color: white;
-          padding: 0.5rem;
-          margin: 0.5rem;">
-          <img src="prev_browser.png" alt="browser" style="margin-right:0.5rem">
-          Browser
+    <div class="d2" style="overflow: auto;display: flex; flex-flow: column;">
+      <div style="height: 3.75rem;; margin:0; color:white; background-color:#203554; padding-left:1rem; display: flex;align-items: center;justify-content: space-between;">
+        <div>
+          <img src="bulb.png" alt="buld" style="margin-right: 0.5rem;">
+          <span>Preview</span>
         </div>
+        <div style="display:flex">
 
-        <div on:click={()=> view_generated_source=true}
-        style="border-bottom-width: 4px; cursor: pointer;
-          border-bottom-style: {view_generated_source?'solid':'hidden'};
-          border-bottom-color: white;
-          padding: 0.5rem;
-          margin: 0.5rem;">
-          <img src="prev_source.png" alt="browser" style="margin-right:0.5rem">
-          Generated source
+          <div on:click={()=> view_generated_source=false}
+          style="border-bottom-width: 4px; cursor: pointer;
+            border-bottom-style: {!view_generated_source?'solid':'hidden'};
+            border-bottom-color: white;
+            padding: 0.5rem;
+            margin: 0.5rem;">
+            <img src="prev_browser.png" alt="browser" style="margin-right:0.5rem">
+            Browser
+          </div>
+
+          <div on:click={()=> view_generated_source=true}
+          style="border-bottom-width: 4px; cursor: pointer;
+            border-bottom-style: {view_generated_source?'solid':'hidden'};
+            border-bottom-color: white;
+            padding: 0.5rem;
+            margin: 0.5rem;">
+            <img src="prev_source.png" alt="browser" style="margin-right:0.5rem">
+            Generated source
+          </div>
+
         </div>
-
       </div>
-    </div>
-    <div class="input-group">
-      <input bind:value="{site_preview_url}" type="text" class="form-control" placeholder="url" aria-label="url" aria-describedby="basic-addon2">
-      <div class="input-group-append">
-        <button on:click={()=> document.getElementById('sitePreview').contentWindow.location.reload() } 
-        class="btn btn-outline-secondary" type="button">
-        <span class="oi oi-loop-circular" title="Refresh" aria-hidden="true"></span>
-        </button>
-        <a class="btn btn-outline-secondary" href="../{site_preview_url}" target="_blank" role="button">
-        <span class="oi oi-external-link" title="Open in new tab" aria-hidden="true"></span>
-        </a>
+      <div class="input-group">
+        <input bind:value="{site_preview_url}" type="text" class="form-control" placeholder="url" aria-label="url" aria-describedby="basic-addon2">
+        <div class="input-group-append">
+          <button on:click={()=> document.getElementById('sitePreview').contentWindow.location.reload() } 
+          class="btn btn-outline-secondary" type="button">
+          <span class="oi oi-loop-circular" title="Refresh" aria-hidden="true"></span>
+          </button>
+          <a class="btn btn-outline-secondary" href="../{site_preview_url}" target="_blank" role="button">
+          <span class="oi oi-external-link" title="Open in new tab" aria-hidden="true"></span>
+          </a>
+        </div>
       </div>
+
+      {#if view_generated_source }
+      <pre style="flex:1; tab-size: 2;">
+      <code>
+        {#await view_generated_source_promise}
+          <!-- promise is pending -->
+          <p>loading...</p>
+        {:then value}
+          <!-- promise was fulfilled -->
+          {value}
+        {:catch error}
+          <!-- promise was rejected -->
+          <p>Something went wrong: {error.message}</p>
+        {/await}
+      </code>
+      </pre>
+      {:else}
+      <iframe style="flex:1" id="sitePreview" title="Site Preview" src="../{site_preview_url}" frameBorder="0" width="100%" height="100%">
+      </iframe>
+      {/if }
     </div>
 
-    {#if view_generated_source }
-    <pre style="flex:1; tab-size: 2;">
-    <code>
-      {#await view_generated_source_promise}
-        <!-- promise is pending -->
-        <p>loading...</p>
-      {:then value}
-        <!-- promise was fulfilled -->
-        {value}
-      {:catch error}
-        <!-- promise was rejected -->
-        <p>Something went wrong: {error.message}</p>
-      {/await}
-    </code>
-    </pre>
-    {:else}
-    <iframe style="flex:1" id="sitePreview" title="Site Preview" src="../{site_preview_url}" frameBorder="0" width="100%" height="100%">
-    </iframe>
-    {/if }
-  </div>
 
+    <div class="d3" style="overflow: auto;display: flex; flex-flow: column;">
 
-	<div class="d3" style="overflow: auto;display: flex; flex-flow: column;">
+      <div style="margin:0; color:white; background-color:#203554; padding-left:1rem; display: flex;align-items: center;justify-content: space-between;">
+        <span>
+          <img src="bulb.png" style="margin-right: 0.5rem;" alt="buld">
+          HTML/Twig Code Editor 
+        </span> 
+        
+      <button on:click={save_twig_template} disabled={!editor_value_changed} style="float:right" class="btn btn-outline-secondary" type="button">
+        <span class="oi oi-check"></span> Save
+      </button>
+        
+      </div>
 
-    <div style="margin:0; color:white; background-color:#203554; padding-left:1rem; display: flex;align-items: center;justify-content: space-between;">
-      <span>
-        <img src="bulb.png" style="margin-right: 0.5rem;" alt="buld">
-        HTML/Twig Code Editor 
-      </span> 
-      
-    <button on:click={save_twig_template} disabled={!editor_value_changed} style="float:right" class="btn btn-outline-secondary" type="button">
-      <span class="oi oi-check"></span> Save
-    </button>
-      
-    </div>
+      <div style="overflow: auto;display: flex; flex-flow: row; flex:1">
+        <div class="list-group" style="overflow:auto">
+            <a href="javascript:void(0)" on:click={addNewFile} 
+            class="list-group-item list-group-item-action list-group-item-light">
+              
+              <strong><span class="oi oi-plus"></span> Add new file</strong>
+            </a>
 
-    <div style="overflow: auto;display: flex; flex-flow: row; flex:1">
-      <div class="list-group" style="overflow:auto">
-          <a href="javascript:void(0)" on:click={addNewFile} 
-          class="list-group-item list-group-item-action list-group-item-light">
-            
-            <strong><span class="oi oi-plus"></span> Add new file</strong>
-          </a>
-
-        {#each files as file, ix}
-          <a href="javascript:void(0)" on:click={()=> selectFile(file, ix)}
-          style="padding-right: 0.5rem;" 
-          class="list-group-item list-group-item-action list-group-item-light {file.name==selected_file_name?'active':''}">
-            {file.name}
-              <span on:click|stopPropagation={ ()=> removeFile(file) }
-                style="float: right; padding: 0.1rem;" 
-                class="oi oi-x remove-btn" 
-                title="Delete file" 
-                aria-hidden="true">
-              </span> 
-          </a>
-        {/each}
+          {#each files as file, ix}
+            <a href="javascript:void(0)" on:click={()=> selectFile(file, ix)}
+            style="padding-right: 0.5rem;" 
+            class="list-group-item list-group-item-action list-group-item-light {file.name==selected_file_name?'active':''}">
+              {file.name}
+                <span on:click|stopPropagation={ ()=> removeFile(file) }
+                  style="float: right; padding: 0.1rem;" 
+                  class="oi oi-x remove-btn" 
+                  title="Delete file" 
+                  aria-hidden="true">
+                </span> 
+            </a>
+          {/each}
+        </div>  
+        <div id="editor" style="width:100%; height:100%; flex:1;">
+        </div>
       </div>  
-      <div id="editor" style="width:100%; height:100%; flex:1;">
-      </div>
-    </div>  
 
-  </div>
-  <!--
-	<div class="d4">
-    <h2>Kako napraviti Testimonials sekciju</h2>
-    <p>Detaljno objasnjenje...<br>.....
-    </p>
-  </div>
-  -->
-</grid>
+    </div>
+    <!--
+    <div class="d4">
+      <h2>Kako napraviti Testimonials sekciju</h2>
+      <p>Detaljno objasnjenje...<br>.....
+      </p>
+    </div>
+    -->
+  </grid>
+  {/if}
 <!--
 m.x = {m.x} px; m.y = {m.y} px
 m.state = {m.state}
