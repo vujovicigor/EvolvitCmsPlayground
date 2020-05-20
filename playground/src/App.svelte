@@ -7,7 +7,7 @@
   window.document.domain = "evolvitcms.com";
   import ace from '../ace-builds-master/src-noconflict/ace.js'
 
-  import { onMount } from 'svelte';
+  import { onMount, tick } from 'svelte';
 
   function fetch2(url, obj){
   //    var body = JSON.stringify(obj);
@@ -164,9 +164,10 @@
 
 //    m.x = grid_el.clientWidth/2 && document.body.clientWidth/2 ;
 //    m.y = grid_el.clientHeight/2 && document.body.clientHeight/2;
-    await showPromise;
+    await showPromise();
     show = true
-    
+    await tick();
+
     ace.config.set('basePath', 'ace-builds-master/src-noconflict/')
     editor = ace.edit("editor");
     editor.setTheme("ace/theme/monokai");
