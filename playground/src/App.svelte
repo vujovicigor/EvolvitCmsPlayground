@@ -356,9 +356,9 @@
   <button on:click={ signin } disabled={!isSignedIn}
   class="btn btn-outline-secondary" type="button"
   title={isSignedIn?'':'Sign in to save'}>
-    Save 
+    Fork 
   </button>
-  <span>{email}</span>
+  <!-- <span>{email}</span> -->
   <iframe  bind:this={headerFrameEl} id="headerFrameEl" title="Header" src="http://evolvitcms.com/googleauthframe" frameBorder="0" width="125px" height="40px">
   </iframe>
 
