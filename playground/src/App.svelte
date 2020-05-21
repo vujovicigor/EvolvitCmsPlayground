@@ -119,7 +119,7 @@
       html: editor.getValue()
     })
     if (document.getElementById('sitePreview')) {
-      document.getElementById('sitePreview').contentWindow.location.reload()
+      //document.getElementById('sitePreview').contentWindow.location.reload()
       let tmp = site_preview_url; 
       site_preview_url=''; 
       tick().then(e=>site_preview_url = tmp)  
