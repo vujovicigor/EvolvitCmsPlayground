@@ -353,7 +353,7 @@
 
 
 <div style="display:flex; justify-content: flex-end; height: 40px;">
-
+  <input type="text" class="form-control" placeholder="Title">
   <button on:click={ signin } disabled={!isSignedIn}
   class="btn btn-outline-secondary" type="button"
   title={isSignedIn?'':'Sign in to save'}>
