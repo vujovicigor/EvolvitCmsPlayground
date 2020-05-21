@@ -118,8 +118,12 @@
       ...files_map[selected_file_name], 
       html: editor.getValue()
     })
-    if (document.getElementById('sitePreview'))
+    if (document.getElementById('sitePreview')) {
       document.getElementById('sitePreview').contentWindow.location.reload()
+      let tmp = site_preview_url; 
+      site_preview_url=''; 
+      tick().then(e=>site_preview_url = tmp)  
+    }
     else 
       view_generated_source_promise = fetch('../'+site_preview_url).then((r)=>r.text())
 
@@ -409,11 +413,13 @@
       <div class="input-group">
         <input bind:value="{site_preview_url}" type="text" class="form-control" placeholder="url" aria-label="url" aria-describedby="basic-addon2">
         <div class="input-group-append">
+        <!--
           <button on:click={()=> document.getElementById('sitePreview').contentWindow.location.reload() } 
             class="btn btn-outline-secondary" type="button">
             <span class="oi oi-loop-circular" title="Refresh" aria-hidden="true"></span>
           </button>
-          <button on:click={()=> site_preview_url = site_preview_url } 
+          -->
+          <button on:click={()=> {let tmp = site_preview_url; site_preview_url=''; tick().then(e=>site_preview_url = tmp)  } } 
             class="btn btn-outline-secondary" type="button">
             <span class="oi oi-loop-circular" title="Refresh" aria-hidden="true"></span>
           </button>
