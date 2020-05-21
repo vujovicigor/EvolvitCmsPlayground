@@ -266,13 +266,14 @@
     showResolve = resolve
   })
 
+  let firstLogin = true
   window.onmessage = function(e){
     console.log('onmessage u plejgroundu', e)
     if (e && e.data && e.data.namespace=='signin'){
       isSignedIn = e.data.data.isSignedIn
       email = e.data.data.email
-      showResolve()
-      
+      if (firstLogin) showResolve()
+      firstLogin = false
     }
 
   };
