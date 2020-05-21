@@ -130,6 +130,9 @@
   
   let postMsg
 	onMount( async() => {
+    //document.getElementById('sitePreview').contentWindow.document.domain = "evolvitcms.com";
+
+
     postMsg = window.document.getElementById('headerFrameEl').contentWindow.postMessage
     let __seq = 0
     function postMessagePromise(msg){
@@ -407,8 +410,12 @@
         <input bind:value="{site_preview_url}" type="text" class="form-control" placeholder="url" aria-label="url" aria-describedby="basic-addon2">
         <div class="input-group-append">
           <button on:click={()=> document.getElementById('sitePreview').contentWindow.location.reload() } 
-          class="btn btn-outline-secondary" type="button">
-          <span class="oi oi-loop-circular" title="Refresh" aria-hidden="true"></span>
+            class="btn btn-outline-secondary" type="button">
+            <span class="oi oi-loop-circular" title="Refresh" aria-hidden="true"></span>
+          </button>
+          <button on:click={()=> site_preview_url = site_preview_url } 
+            class="btn btn-outline-secondary" type="button">
+            <span class="oi oi-loop-circular" title="Refresh" aria-hidden="true"></span>
           </button>
           <a class="btn btn-outline-secondary" href="../{site_preview_url}" target="_blank" role="button">
           <span class="oi oi-external-link" title="Open in new tab" aria-hidden="true"></span>
