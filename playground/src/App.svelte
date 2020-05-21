@@ -290,7 +290,7 @@
 		box-sizing: content-box;
 		display: grid;
 		width:100%;
-		height:100vh;
+		height:calc(100vh - 40px);
 		grid-template-columns: var(--mx, auto) 5px auto;
   	grid-template-rows: var(--my, auto) 5px auto;
   	grid-template-areas: 
@@ -351,7 +351,7 @@
 <window on:mouseup|capture={()=> { if(m.state) m.state = '' } }/>
 
 
-<div style="display:flex; justify-content: flex-end;">
+<div style="display:flex; justify-content: flex-end; height: 40px;">
 
   <button on:click={ signin } disabled={!isSignedIn}
   class="btn btn-outline-secondary" type="button"
