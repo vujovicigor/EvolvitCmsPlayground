@@ -13,15 +13,24 @@
     }
 
     // zezalica za mene da mogu da izaberem projekat tj bazu
-    if ( isset($_REQUEST['sess_id']) ) $_SESSION['sess_id'] = $_REQUEST['sess_id'];
-
-    if ( !isset($_SESSION['sess_id']) ) $_SESSION['sess_id'] = md5(uniqid());    
-    $sess_id = $_SESSION['sess_id'];
+    //if ( isset($_REQUEST['sess_id']) ) $_SESSION['sess_id'] = $_REQUEST['sess_id'];
 
     $subdomain = explode('.', $_SERVER['HTTP_HOST'])[0]; // read subdomain
     if (!ctype_alnum($subdomain)) {
       die('Bad subdomain.');
     }
+
+    if (isset($_COOKIE) && isset($_COOKIE['pg'])){ // if cookie is set
+      $pg_arr = json_decode( $_COOKIE['pg'] );  
+      if (in_array($subdomain, $pg_arr)) {  // and subdomain is in cookie
+        $_SESSION['sess_id'] = $subdomain;  // you are the owner
+      }      
+    }
+    
+    if ( !isset($_SESSION['sess_id']) ) $_SESSION['sess_id'] = md5(uniqid());    
+    $sess_id = $_SESSION['sess_id'];    
+
+
     // baza2 je -> -main
     $db1_path = dirname(__FILE__).'/db/klon-'.$sess_id.'-main.sqlite';
     $db2_path = dirname(__FILE__).'/db/klon-'.$sess_id.'-userfiles.sqlite';
