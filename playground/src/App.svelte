@@ -285,6 +285,7 @@
         email = r.email
       })    
   }
+  let showProjectList = false
 </script>
 <style>
 	grid {
@@ -355,11 +356,11 @@
 <div style="display:flex; justify-content: flex-end; height: 40px;">
   <input type="text" class="form-control" placeholder="Title">
 
-  <div class="dropdown">
-    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+  <div class="dropdown" class:show={showProjectList}>
+    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="{showProjectList}">
       Your saved Projects
     </button>
-    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+    <div class="dropdown-menu" class:show={showProjectList} aria-labelledby="dropdownMenuButton">
       <a class="dropdown-item" href="#">Action</a>
       <a class="dropdown-item" href="#">Another action</a>
       <a class="dropdown-item" href="#">Something else here</a>
