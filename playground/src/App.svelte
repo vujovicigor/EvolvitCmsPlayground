@@ -77,6 +77,7 @@
       var [resp,err] = await fetch2('../cms/copycurrentproject.php', {
         id:r.data
       })
+      document.location = 'http://'+r.data+'evolvitcms.com/playground'
     })
   }
 
