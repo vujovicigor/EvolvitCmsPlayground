@@ -9,6 +9,7 @@
 
   import { onMount, tick } from 'svelte';
 
+  // helper
   function fetch2(url, obj){
   //    var body = JSON.stringify(obj);
     //console.log('fetch', this)
@@ -58,6 +59,21 @@
   console.log('!!!!!!')
   testf()
 */
+  let subdomainTitle = ''
+
+  let full_sub = window.location.host.split('.')[0]
+  let subdomain_id = full_sub.split('-').pop()
+
+  function PlaygroundProjectsAdd(){
+    // todo, probjera dal je title prazno i da li je user je na tom projektu
+    let subdomain = subdomainTitle.replace(/[^A-Za-z0-9]/g, '')
+    postMessagePromise({namespace:'PlaygroundProjectsAdd', data:{Name:subdomainTitle, Subdomain:subdomain}})
+    .then((r)=>{ 
+      console.log('PlaygroundProjectsAdd', r); 
+      PlaygroundProjectsList = r.data 
+    })
+  }
+
   let grid_el
   let editor
   let site_preview_url = window.location.hash.slice(1) 
@@ -359,7 +375,7 @@
 
 
 <div style="display:flex; justify-content: flex-end; height: 40px;">
-  <input type="text" class="form-control" placeholder="Title">
+  <input type="text" class="form-control" placeholder="Title" bind:value={subdomainTitle}>
 
   {#if isSignedIn}
   <div class="dropdown" class:show={showProjectList}>
@@ -375,7 +391,7 @@
   {/if}
 
 
-  <button on:click={ signin } disabled={!isSignedIn}
+  <button on:click={ PlaygroundProjectsAdd } disabled={!isSignedIn}
   class="btn btn-outline-secondary" type="button"
   title={isSignedIn?'':'Sign in to save'}>
     {isSignedIn?'Save Project ':'Sign in to save'}
