@@ -361,7 +361,7 @@
 <div style="display:flex; justify-content: flex-end; height: 40px;">
   <input type="text" class="form-control" placeholder="Title">
 
-  {#if signin}
+  {#if isSignedIn}
   <div class="dropdown" class:show={showProjectList}>
     <button on:click={()=>showProjectList=!showProjectList} class="btn btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="{showProjectList}">
       Your saved Projects
