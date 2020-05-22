@@ -131,7 +131,7 @@
     editor.focus();
     
   }
-  
+  let PlaygroundProjectsList = []
   let postMsg
 	onMount( async() => {
     //document.getElementById('sitePreview').contentWindow.document.domain = "evolvitcms.com";
@@ -158,8 +158,8 @@
 
     // test
     setTimeout(function(){
-      postMessagePromise({namespace:'PlaygroundProjectsAdd'})
-      .then((r)=>{ console.log('JEEE', r) })
+      postMessagePromise({namespace:'PlaygroundProjectsList'})
+      .then((r)=>{ console.log('JEEE', r); PlaygroundProjectsList = r })
     }, 6000)
 
 
@@ -361,7 +361,10 @@
       Your saved Projects
     </button>
     <div class="dropdown-menu" class:show={showProjectList} aria-labelledby="dropdownMenuButton">
-      <a class="dropdown-item" href="#">Action</a>
+    {#each PlaygroundProjectsList as project}
+      <a class="dropdown-item" href="http://{project.id}.evolvitcms.com">http://{project.id}.evolvitcms.com</a>
+    {/each}
+
       <a class="dropdown-item" href="#">Another action</a>
       <a class="dropdown-item" href="#">Something else here</a>
     </div>
