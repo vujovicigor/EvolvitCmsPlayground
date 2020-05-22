@@ -19,3 +19,6 @@
   copy( $db2_path, $db2_to_path);
 
   echo '{"response":"ok"}';
+  echo '$sess_id='.$sess_id;
+  echo '$to_id='.$to_id;
+  
