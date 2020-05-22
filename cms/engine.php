@@ -15,7 +15,10 @@
     // zezalica za mene da mogu da izaberem projekat tj bazu
     //if ( isset($_REQUEST['sess_id']) ) $_SESSION['sess_id'] = $_REQUEST['sess_id'];
 
-    $subdomain = explode('.', $_SERVER['HTTP_HOST'])[0]; // read subdomain
+    $subdomainStr = explode('.', $_SERVER['HTTP_HOST'])[0]; // read subdomain
+    $explodedSubdomain = explode('-', $subdomainStr);
+    $subdomain = end($explodedSubdomain);    
+
     if (!ctype_alnum($subdomain)) {
       die('Bad subdomain.');
     }

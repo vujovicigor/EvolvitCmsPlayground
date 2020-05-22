@@ -67,7 +67,7 @@
 
   async function PlaygroundProjectsAdd(){
     // todo, probjera dal je title prazno i da li je user je na tom projektu
-    if (!subdomainTitle) subdomainTitle = prompt('Project name:')
+    if (!subdomainTitle) subdomainTitle = prompt('Project name:') || ''
     let subdomain = subdomainTitle.replace(/[^A-Za-z0-9]/g, '')
     postMessagePromise({namespace:'PlaygroundProjectsAdd', Name:subdomainTitle, Subdomain:subdomain})
     .then(async (r)=>{ 
