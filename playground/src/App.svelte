@@ -11,6 +11,7 @@
 
   // helper
   function fetch2(url, obj){
+    if (!url) url = '../cms/'+'api.php'
   //    var body = JSON.stringify(obj);
     //console.log('fetch', this)
     // TODO: Zamijeni ovo sranje s necim boljim
@@ -24,7 +25,7 @@
 //    if (self) self.set('loading', true)
     
     return new Promise(function(resolve, reject) {
-      var response = fetch('../cms/'+'api.php', {
+      var response = fetch(url, {
           method: 'post',
           credentials:'same-origin',
   //            headers: {
@@ -52,7 +53,7 @@
   }
 /*
   async function testf(){
-    var [resp,err] = await fetch2('twigs', {query:'Twigs', id: "2"})
+    var [resp,err] = await fetch2(null, {query:'Twigs', id: "2"})
     console.log('resp', resp)
   }
 
@@ -64,13 +65,18 @@
   let full_sub = window.location.host.split('.')[0]
   let subdomain_id = full_sub.split('-').pop()
 
-  function PlaygroundProjectsAdd(){
+  async function PlaygroundProjectsAdd(){
     // todo, probjera dal je title prazno i da li je user je na tom projektu
+    if (!subdomainTitle) subdomainTitle = prompt('Project name:')
     let subdomain = subdomainTitle.replace(/[^A-Za-z0-9]/g, '')
     postMessagePromise({namespace:'PlaygroundProjectsAdd', Name:subdomainTitle, Subdomain:subdomain})
-    .then((r)=>{ 
+    .then(async (r)=>{ 
       console.log('PlaygroundProjectsAdd', r); 
-      //PlaygroundProjectsList = r.data 
+
+      //copycurrentproject
+      var [resp,err] = await fetch2('../cms/copycurrentproject.php', {
+        id:r.data
+      })
     })
   }
 
@@ -128,7 +134,7 @@
   }
 
   async function save_twig_template(){
-    var [resp,err] = await fetch2('twigs', {
+    var [resp,err] = await fetch2(null, {
       query:'Twigs', 
       _action:'update', 
       ...files_map[selected_file_name], 
@@ -222,7 +228,7 @@
 	});  
 
   async function fetch_file_list(){
-    var [resp,err] = await fetch2('twigs', {query:'Twigs'})
+    var [resp,err] = await fetch2(null, {query:'Twigs'})
     files_map = resp.reduce(function(r, e) {
       r[e.name] = e;
       return r;
@@ -243,7 +249,7 @@
     if (!newFileName.endsWith('.twig'))
       newFileName = newFileName + '.twig';
     
-    var [resp,err] = await fetch2('twigs', {
+    var [resp,err] = await fetch2(null, {
       query:'Twigs', 
       _action:'insert', 
       name: newFileName, 
@@ -260,7 +266,7 @@
     let conf = confirm(`Remove file '${file.name}'?`)
     if (!conf) return
 
-    var [resp,err] = await fetch2('twigs', {
+    var [resp,err] = await fetch2(null, {
       query:'Twigs', 
       _action:'delete', 
       ...file
