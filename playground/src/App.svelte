@@ -259,6 +259,10 @@
 
   let headerFrameEl
   let isSignedIn
+  $: if (isSignedIn){
+    postMessagePromise({namespace:'PlaygroundProjectsList'})
+    .then((r)=>{ console.log('PlaygroundProjectsList', r); PlaygroundProjectsList = r.data })
+  }
   let email
   let show = false
   let showResolve
@@ -362,11 +366,8 @@
     </button>
     <div class="dropdown-menu" class:show={showProjectList} aria-labelledby="dropdownMenuButton">
     {#each PlaygroundProjectsList as project}
-      <a class="dropdown-item" href="http://{project.id}.evolvitcms.com">http://{project.id}.evolvitcms.com</a>
+      <a class="dropdown-item" href="http://{project.id}.evolvitcms.com/playground">{project.Subdomain}{project.id}.evolvitcms.com</a>
     {/each}
-
-      <a class="dropdown-item" href="#">Another action</a>
-      <a class="dropdown-item" href="#">Something else here</a>
     </div>
   </div>
 
