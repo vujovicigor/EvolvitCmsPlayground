@@ -357,7 +357,7 @@
   <input type="text" class="form-control" placeholder="Title">
 
   <div class="dropdown" class:show={showProjectList}>
-    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="{showProjectList}">
+    <button on:click={()=>showProjectList=!showProjectList} class="btn btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="{showProjectList}">
       Your saved Projects
     </button>
     <div class="dropdown-menu" class:show={showProjectList} aria-labelledby="dropdownMenuButton">
