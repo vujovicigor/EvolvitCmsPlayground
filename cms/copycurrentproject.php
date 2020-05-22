@@ -15,7 +15,7 @@
   $db1_to_path = dirname(__FILE__).'/db/klon-'.$to_id.'-main.sqlite';
   $db2_to_path = dirname(__FILE__).'/db/klon-'.$to_id.'-userfiles.sqlite';
   
-  copy( db1_path, db1_to_path);
-  copy( db2_path, db2_to_path);
+  copy( $db1_path, $db1_to_path);
+  copy( $db2_path, $db2_to_path);
 
   echo '{"response":"ok"}';
