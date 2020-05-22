@@ -67,10 +67,10 @@
   function PlaygroundProjectsAdd(){
     // todo, probjera dal je title prazno i da li je user je na tom projektu
     let subdomain = subdomainTitle.replace(/[^A-Za-z0-9]/g, '')
-    postMessagePromise({namespace:'PlaygroundProjectsAdd', data:{Name:subdomainTitle, Subdomain:subdomain}})
+    postMessagePromise({namespace:'PlaygroundProjectsAdd', Name:subdomainTitle, Subdomain:subdomain})
     .then((r)=>{ 
       console.log('PlaygroundProjectsAdd', r); 
-      PlaygroundProjectsList = r.data 
+      //PlaygroundProjectsList = r.data 
     })
   }
 
