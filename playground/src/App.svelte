@@ -159,7 +159,7 @@
     // test
     setTimeout(function(){
       postMessagePromise({namespace:'PlaygroundProjectsList'})
-      .then((r)=>{ console.log('JEEE', r); PlaygroundProjectsList = r })
+      .then((r)=>{ console.log('JEEE', r); PlaygroundProjectsList = r.data })
     }, 6000)
 
 
