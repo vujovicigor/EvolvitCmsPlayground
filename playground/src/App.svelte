@@ -157,11 +157,12 @@
     window.postMsg = postMsg
 
     // test
+    /*
     setTimeout(function(){
       postMessagePromise({namespace:'PlaygroundProjectsList'})
       .then((r)=>{ console.log('JEEE', r); PlaygroundProjectsList = r.data })
     }, 6000)
-
+*/
 
     //console.log(grid_el, grid_el.clientWidth, document.body.clientWidth, grid_el.clientWidth/2 && document.body.clientWidth/2)
     window.grid_el = grid_el
@@ -360,16 +361,18 @@
 <div style="display:flex; justify-content: flex-end; height: 40px;">
   <input type="text" class="form-control" placeholder="Title">
 
+  {#if signin}
   <div class="dropdown" class:show={showProjectList}>
     <button on:click={()=>showProjectList=!showProjectList} class="btn btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="{showProjectList}">
       Your saved Projects
     </button>
     <div class="dropdown-menu" class:show={showProjectList} aria-labelledby="dropdownMenuButton">
     {#each PlaygroundProjectsList as project}
-      <a class="dropdown-item" href="http://{project.id}.evolvitcms.com/playground">{project.Subdomain}{project.id}.evolvitcms.com</a>
+      <a class="dropdown-item" href="http://{project.id}.evolvitcms.com/playground">{project.Subdomain}-{project.id}.evolvitcms.com</a>
     {/each}
     </div>
   </div>
+  {/if}
 
 
   <button on:click={ signin } disabled={!isSignedIn}
