@@ -382,7 +382,7 @@
 
 
 <div style="display:flex; justify-content: flex-end; height: 40px;">
-  <input type="text" class="form-control" placeholder="Title" bind:value={subdomainTitle}>
+  <input type="text" class="form-control" placeholder="Project title" bind:value={subdomainTitle}>
 
   {#if isSignedIn}
   <div class="dropdown" class:show={showProjectList}>
@@ -399,7 +399,7 @@
 
 
   <button on:click={ PlaygroundProjectsAdd } disabled={!isSignedIn}
-  class="btn btn-outline-secondary" type="button"
+  class="btn btn-outline-secondary" type="button" style="height: 40px;"
   title={isSignedIn?'':'Sign in to save'}>
     {isSignedIn?'Save Project ':'Sign in to save'}
   </button>
@@ -475,7 +475,7 @@
       </div>
 
       {#if view_generated_source }
-      <pre style="flex:1; tab-size: 2;">
+      <pre style="flex:1; tab-size: 2; font-size: 0.75rem;">
       <code>
         {#await view_generated_source_promise}
           <!-- promise is pending -->
