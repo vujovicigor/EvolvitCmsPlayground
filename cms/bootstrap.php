@@ -59,8 +59,10 @@ if ($pg_host !== $pg_base && substr($pg_host, -strlen($pg_base) - 1) === '.'.$pg
     $pg_project = end($parts);
 } else {
     // no wildcard DNS: select the project with ?project=<id> (remembered in the session)
-    if (isset($_GET['project']) && is_string($_GET['project'])) {
-        $p = $_GET['project'];
+    $p = null;
+    if (isset($_GET['project']) && is_string($_GET['project'])) $p = $_GET['project'];
+    elseif (isset($_COOKIE['pg_project']) && is_string($_COOKIE['pg_project'])) $p = $_COOKIE['pg_project'];
+    if ($p !== null) {
         if ($p !== '' && !ctype_alnum($p)) die('Bad project.');
         if (!isset($_SESSION['pg_project']) || $_SESSION['pg_project'] !== $p) {
             $_SESSION['pg_project'] = $p;
@@ -97,12 +99,29 @@ function evolvit_pg_copy_project($fromPrefix, $toPrefix) {
     }
 }
 
-// first request of a sandbox: clone the selected project (or the default template database)
+/** Does this request change data? Only then does the visitor need a private copy. */
+function evolvit_pg_request_writes() {
+    if (!isset($_SERVER['REQUEST_METHOD']) || $_SERVER['REQUEST_METHOD'] !== 'POST') return false;
+    $script = basename(isset($_SERVER['SCRIPT_FILENAME']) ? $_SERVER['SCRIPT_FILENAME'] : '');
+    if ($script !== 'api.php') return true; // uploads, copycurrentproject, comments, ...
+    $req = array_merge($_GET, $_POST);
+    $action = isset($req['_action']) && is_string($req['_action']) ? $req['_action'] : '';
+    $query  = isset($req['query']) && is_string($req['query']) ? $req['query'] : '';
+    return in_array($action, array('insert', 'update', 'delete'), true)
+        || str_word_count($query, 0, '1234567890:@&_') > 1; // free-form SQL may write
+}
+
+// Visitors (and crawlers) read the source project read-only; the sandbox copy is created
+// lazily on the first write, so cookieless bots do not clone a database per request.
 if (!file_exists($EVOLVIT_DB_MAIN)) {
     $src = $pg_dbdir.'/klon-'.$pg_project;
-    if ($pg_project !== '' && file_exists($src.'-main.sqlite')) {
+    if ($pg_project === '' || !file_exists($src.'-main.sqlite')) $src = $pg_dbdir.'/klon-base';
+    if (evolvit_pg_request_writes()) {
         evolvit_pg_copy_project($src, $pg_dbdir.'/klon-'.$sess_id);
     } else {
-        evolvit_pg_copy_project($pg_dbdir.'/klon-base', $pg_dbdir.'/klon-'.$sess_id);
+        $EVOLVIT_DB_MAIN      = $src.'-main.sqlite';
+        $EVOLVIT_DB_USERFILES = $src.'-userfiles.sqlite';
+        $EVOLVIT_UPLOADS_DIR  = $src.'-files';
+        $EVOLVIT_DB_READONLY  = true;
     }
 }

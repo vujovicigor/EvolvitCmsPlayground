@@ -10,6 +10,12 @@
   const BASE_DOMAIN = PG_CONFIG.baseDomain || 'evolvitcms.com'
   // projects live on <name>-<id>.BASE_DOMAIN; without wildcard DNS fall back to ?project=<id>
   const WILDCARD = window.location.hostname.endsWith('.' + BASE_DOMAIN)
+  // without wildcard DNS the selected project travels to PHP in a cookie (this page is static HTML);
+  // set it before the admin / preview iframes are created
+  if (!WILDCARD) {
+    const p = new URLSearchParams(window.location.search).get('project')
+    if (p !== null && /^[A-Za-z0-9]{0,40}$/.test(p)) document.cookie = 'pg_project=' + p + '; path=/; Secure; SameSite=Lax'
+  }
   function projectUrl(id, sub){
     id = String(id|0)
     if (WILDCARD) return 'https://' + (sub ? String(sub).replace(/[^A-Za-z0-9]/g, '') + '-' : '') + id + '.' + BASE_DOMAIN + '/playground/'
@@ -209,11 +215,17 @@
 
 //    m.x = grid_el.clientWidth/2 && document.body.clientWidth/2 ;
 //    m.y = grid_el.clientHeight/2 && document.body.clientHeight/2;
-    await showPromise;
+    // don't block the editor on the sign-in frame (Google may be slow, blocked or unreachable)
+    await Promise.race([showPromise, new Promise(r => setTimeout(r, 2000))]);
     show = true
     await tick();
 
-    ace.config.set('basePath', 'ace-builds-master/src-noconflict/')
+    // Ace loads modes/themes/workers on demand: point every path at the vendored copy
+    const acePath = new URL('ace-builds-master/src-noconflict/', document.baseURI).href
+    for (const k of ['basePath', 'modePath', 'themePath', 'workerPath']) {
+      ace.config.set(k, acePath)
+      if (window.ace && window.ace !== ace) window.ace.config.set(k, acePath)
+    }
     editor = ace.edit("editor");
     editor.setTheme("ace/theme/monokai");
     editor.session.setMode("ace/mode/twig");
@@ -310,7 +322,7 @@
 
   let firstLogin = true
   window.onmessage = function(e){
-    console.log('onmessage u plejgroundu', e)
+    if (e.origin !== SITE_ORIGIN) return
     if (e && e.data && e.data.namespace=='signin'){
       isSignedIn = e.data.data.isSignedIn
       email = e.data.data.email
@@ -320,11 +332,10 @@
 
   };
   function signin(){
-      postMessagePromise({namespace:'gapi.auth2.getAuthInstance().signIn()'})
-      .then((r)=>{ 
-        console.log('JEEE', r) 
-        isSignedIn = true
-        email = r.email
+      postMessagePromise({namespace:'signIn'})
+      .then((r)=>{
+        isSignedIn = !!(r.data && r.data.isSignedIn)
+        email = r.data && r.data.email
       })    
   }
   let showProjectList = false
@@ -418,7 +429,7 @@
     {isSignedIn?'Save Project ':'Sign in to save'}
   </button>
   <!-- <span>{email}</span> -->
-  <iframe  bind:this={headerFrameEl} id="headerFrameEl" title="Header" src="{SITE_ORIGIN}/googleauthframe" frameBorder="0" width="125px" height="40px">
+  <iframe  bind:this={headerFrameEl} id="headerFrameEl" title="Header" src="{SITE_ORIGIN}/googleauthframe" frameBorder="0" width="180px" height="44px" allow="identity-credentials-get">
   </iframe>
 
 </div>
