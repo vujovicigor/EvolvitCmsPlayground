@@ -301,9 +301,27 @@
         return array(array('msg' => 1));
     }
 
+    // Personal data never returned to anonymous API callers (templates rendered with fetch() still get it
+    // and decide what to print). Stored queries like `Comment` select `_m.*`, which includes these.
+    $EVOLVIT_PRIVATE_COLUMNS = array('google_user_email', 'google_user_sub');
+
+    function evolvit_strip_private($data){
+        global $EVOLVIT_PRIVATE_COLUMNS;
+        if (is_array($data)) {
+            foreach ($data as $k => $v) {
+                if (is_string($k) && in_array($k, $EVOLVIT_PRIVATE_COLUMNS, true)) unset($data[$k]);
+                elseif (is_array($v)) $data[$k] = evolvit_strip_private($v);
+            }
+        }
+        return $data;
+    }
+
     function api($sqlstring, $params=array(), $safe=false){
         try {
-            return api_unsafe($sqlstring, $params, $safe);
+            $res = api_unsafe($sqlstring, $params, $safe);
+            if (!$safe && evolvit_role(is_array($params) ? $params : array()) <= 1 && !(session_status() == PHP_SESSION_ACTIVE && isset($_SESSION['_session_user_role']) && (int)$_SESSION['_session_user_role'] > 1))
+                $res = evolvit_strip_private($res);
+            return $res;
         } catch (Exception $e) {
             global $db;
             if ($db->inTransaction()) $db->rollBack();
@@ -378,12 +396,12 @@
             $err = evolvit_check_write($orgsqlstring, $action, $params);
             if ($err) return array('error' => $err);
 
+            // Rebuilding a table after schema changes is native PHP (it used to be PHP code stored in
+            // _sql.eval). Route by name: databases may have eval set to 'true' (old) or 'false' (v2.0.0/1).
+            if ($orgsqlstring === '_recreate_user_table')
+                return evolvit_recreate_user_table(isset($params['tablename']) ? $params['tablename'] : '');
             // Executing PHP code stored in the database was removed (remote code execution).
-            if ($respp[0]['eval']==='true') {
-                if ($orgsqlstring === '_recreate_user_table')
-                    return evolvit_recreate_user_table(isset($params['tablename']) ? $params['tablename'] : '');
-                return array('error' => 'eval queries are disabled');
-            }
+            if ($respp[0]['eval']==='true') return array('error' => 'eval queries are disabled');
 
             $sqlstring = $respp[0]['sql_select'];
             $is_multiple = $respp[0]['is_multiple']==='false'?false:true;
