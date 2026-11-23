@@ -2,7 +2,7 @@
 {% block description %}All posts{% endblock %}
 {% block content %}
 <grid>
-{% for item in fetch("Post") if item.Publish == 'true'%}
+{% for item in fetch("Post")|filter(item => item.Publish == 'true') %}
 	<div col="1/2">
 		<card>
 			<h5>{{item.Title}} <tag style="float:right; text-transform: none;">{{item.Date}}</tag></h5>

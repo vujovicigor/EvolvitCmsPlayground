@@ -29,7 +29,7 @@
         <li>
           <a>Posts</a>
           <menu>
-          {% for item in fetch("Post") if item.Publish == 'true' %}
+          {% for item in fetch("Post")|filter(item => item.Publish == 'true') %}
             <menuitem><a href="post/{{item.Slug}}">{{item.Title}}</a></menuitem>
           {% endfor %}
           </menu>

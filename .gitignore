@@ -1,2 +1,6 @@
 node_modules/
-.DS_Store
+.DS_Store.DS_Store
+cms/config.php
+cms/db/klon-*
+!cms/db/klon-base-*
+!cms/db/klon-base-files/

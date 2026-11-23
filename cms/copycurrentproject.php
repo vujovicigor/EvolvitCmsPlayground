@@ -1,21 +1,16 @@
 <?php
-  error_reporting(E_ALL);
-  ini_set('display_errors', 1);
-  
-  session_start();
-  
-  if ( !isset( $_SESSION['sess_id'] )) return;
-  $sess_id = $_SESSION['sess_id'];    
-  if ( !isset( $_POST['id'] )) return;
-  $to_id = $_POST['id'];
+// Save the visitor's sandbox as a playground project they own (id issued by the main site).
+require_once(dirname(__FILE__).'/security.php');
+evolvit_session_start();
+evolvit_require_post();
+evolvit_require_same_origin();
+include("engine.php"); // bootstrap.php resolves the current sandbox
+header('Content-Type: application/json');
 
-  $db1_path = dirname(__FILE__).'/db/klon-'.$sess_id.'-main.sqlite';
-  $db2_path = dirname(__FILE__).'/db/klon-'.$sess_id.'-userfiles.sqlite';
+$to_id = isset($_POST['id']) ? (string)$_POST['id'] : '';
+if (!ctype_digit($to_id) || $to_id === '0') evolvit_json_error('Invalid project id');
+if (!in_array($to_id, evolvit_pg_owned_projects(), true)) evolvit_json_error('You do not own this project', 403);
+if ($to_id === $sess_id) { echo '{"response":"ok"}'; return; }
 
-  $db1_to_path = dirname(__FILE__).'/db/klon-'.$to_id.'-main.sqlite';
-  $db2_to_path = dirname(__FILE__).'/db/klon-'.$to_id.'-userfiles.sqlite';
-  
-  copy( $db1_path, $db1_to_path);
-  copy( $db2_path, $db2_to_path);
-
-  echo '{"response":"ok"}';
+evolvit_pg_copy_project($pg_dbdir.'/klon-'.$sess_id, $pg_dbdir.'/klon-'.$to_id);
+echo '{"response":"ok"}';

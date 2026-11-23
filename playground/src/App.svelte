@@ -4,7 +4,20 @@
 
   // ace NOV
 //
-  window.document.domain = "evolvitcms.com";
+  // Deployment settings (optional): window.PLAYGROUND_CONFIG = { siteOrigin, baseDomain } in config.js
+  const PG_CONFIG = window.PLAYGROUND_CONFIG || {}
+  const SITE_ORIGIN = (PG_CONFIG.siteOrigin || 'https://evolvitcms.com').replace(/\/$/, '')
+  const BASE_DOMAIN = PG_CONFIG.baseDomain || 'evolvitcms.com'
+  // projects live on <name>-<id>.BASE_DOMAIN; without wildcard DNS fall back to ?project=<id>
+  const WILDCARD = window.location.hostname.endsWith('.' + BASE_DOMAIN)
+  function projectUrl(id, sub){
+    id = String(id|0)
+    if (WILDCARD) return 'https://' + (sub ? String(sub).replace(/[^A-Za-z0-9]/g, '') + '-' : '') + id + '.' + BASE_DOMAIN + '/playground/'
+    return window.location.origin + '/playground/?project=' + id
+  }
+  function projectLabel(id, sub){
+    return WILDCARD ? (sub + '-' + id + '.' + BASE_DOMAIN) : (sub + ' (#' + id + ')')
+  }
   import ace from '../ace-builds-master/src-noconflict/ace.js'
 
   import { onMount, tick } from 'svelte';
@@ -77,7 +90,7 @@
       var [resp,err] = await fetch2('../cms/copycurrentproject.php', {
         id:r.data
       })
-      document.location = 'http://'+r.data+'.evolvitcms.com/playground'
+      document.location = projectUrl(r.data, subdomain)
     })
   }
 
@@ -167,13 +180,14 @@
         let seq = ++__seq;
 
         let event_ref = window.addEventListener("message", function(resp){
+          if (resp.origin !== SITE_ORIGIN) return
           if (resp && resp.data && resp.data.__seq && resp.data.__seq == seq){
             window.removeEventListener("message", event_ref)
             resolve(resp.data)
           }
         }, false);
 
-        postMsg({...msg, __seq:seq}, 'http://evolvitcms.com/googleauthframe')
+        postMsg({...msg, __seq:seq}, SITE_ORIGIN)
       });
     }
     window.postMessagePromise = postMessagePromise
@@ -391,7 +405,7 @@
     </button>
     <div class="dropdown-menu" class:show={showProjectList} aria-labelledby="dropdownMenuButton">
     {#each PlaygroundProjectsList as project}
-      <a class="dropdown-item" href="http://{project.id}.evolvitcms.com/playground">{project.Subdomain}-{project.id}.evolvitcms.com</a>
+      <a class="dropdown-item" href="{projectUrl(project.id, project.Subdomain)}">{projectLabel(project.id, project.Subdomain)}</a>
     {/each}
     </div>
   </div>
@@ -404,13 +418,15 @@
     {isSignedIn?'Save Project ':'Sign in to save'}
   </button>
   <!-- <span>{email}</span> -->
-  <iframe  bind:this={headerFrameEl} id="headerFrameEl" title="Header" src="http://evolvitcms.com/googleauthframe" frameBorder="0" width="125px" height="40px">
+  <iframe  bind:this={headerFrameEl} id="headerFrameEl" title="Header" src="{SITE_ORIGIN}/googleauthframe" frameBorder="0" width="125px" height="40px">
   </iframe>
 
 </div>
+<!--
 {#await showPromise}
 <div style="text-align:center; padding-top:4rem"><p>Loading...</p></div>
 {:then}
+-->
   <grid bind:this={grid_el} on:mousemove={handleMousemove} on:mouseup={()=> { if(m.state) m.state = '' } }
         style="--mx:{100*m.x}%; --my:{100*m.y}%; user-select:{userSelect}">
     <div class="vd1" on:mousedown={()=> m.state = 'downH'}></div>
@@ -545,7 +561,7 @@
     </div>
     -->
   </grid>
-  {/await}
+<!--  {/await} -->
 <!--
 m.x = {m.x} px; m.y = {m.y} px
 m.state = {m.state}

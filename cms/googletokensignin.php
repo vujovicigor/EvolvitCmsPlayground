@@ -1,28 +1,16 @@
 <?php
-$idtoken = $_POST['idtoken'];
-//echo $idtoken;
+require_once(dirname(__FILE__).'/security.php');
+evolvit_session_start();
+evolvit_require_post();
+evolvit_require_same_origin();
+header('Content-Type: application/json');
 
-// Get cURL resource
-$curl = curl_init();
-// Set some options - we are passing in a useragent too here
-curl_setopt_array($curl, [
-    CURLOPT_RETURNTRANSFER => 1,
-    CURLOPT_URL => 'https://oauth2.googleapis.com/tokeninfo?id_token='.$idtoken,
-    //CURLOPT_USERAGENT => 'Codular Sample cURL Request'
-]);
-// Send the request & save response to $resp
-$resp = curl_exec($curl);
-echo $resp;
-// Close request to clear up some resources
-curl_close($curl);
-
-$userdata = json_decode($resp, TRUE);
-session_start();
-//header('Access-Control-Allow-Origin: *');
-//header('Content-Type: application/json');
-$_SESSION['_session_google_user_sub'] = $userdata['sub'];
-$_SESSION['_session_google_user_email'] = $userdata['email'];
-$_SESSION['_session_google_user_picture'] = $userdata['picture'];
-$_SESSION['_session_google_user_given_name'] = $userdata['given_name'];
-$_SESSION['_session_google_user_family_name'] = $userdata['family_name'];
-$_SESSION['_session_google_user_locale'] = $userdata['locale'];
+$claims = evolvit_google_verify_token(isset($_POST['idtoken']) ? $_POST['idtoken'] : '');
+if ($claims === null) evolvit_json_error('Invalid token', 401);
+evolvit_google_login($claims);
+echo json_encode(array(
+  'email' => $_SESSION['_session_google_user_email'],
+  'given_name' => $_SESSION['_session_google_user_given_name'],
+  'family_name' => $_SESSION['_session_google_user_family_name'],
+  'picture' => $_SESSION['_session_google_user_picture'],
+));
